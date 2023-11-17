@@ -66,13 +66,13 @@ The 'minutes' column was renamed to 'time' and a 'time_category' column was adde
 
 Here we first analyse the distribution for the time taken for each recipe ('minutes').
 
-// display uni_fig1 graph //
+<iframe src="assets/uni_fig1.html" width=800 height=600 frameBorder=0></iframe>
 
 In this distribution, we see that there is a peak when the time taken to cook is between 30-40 (exclusive) minutes. I decided to zoom into the range 0-135 minutes due to extreme outliers. It is also interesting to note that the plot is skewed to the right, with more recipes taking less than 60 minutes to make. In order to take into consideration for outliers, I have decided to only consider values within the interquartile range of 'time'. 
 
 Now we want to take a look at the distribution of calories using the original cleaned dataframe that includes all the outliers. 
 
-// display uni_fig2 graph //
+<iframe src="assets/uni_fig2.html" width=800 height=600 frameBorder=0></iframe>
 
 This graph is also zoomed in as a result of extreme outliers, but we can observe that the graph of this is also skewed to the right. Again in order to take into consideration for outliers, I have decided to omit outliers that lie outside of the interquartile range of 'calories'.
 
@@ -82,13 +82,13 @@ For the bivariate analysis, I decided to remove all outliers (discussed in the u
 
 First, I will be doing a bivariate analysis between time and calories.
 
-// dispalay biv_fig1 graph //
+<iframe src="assets/biv_fig1.html" width=800 height=600 frameBorder=0></iframe>
 
 Correlation = 0.23
 
 When looking at this figure where we plot time against calories, we can see very clearly that there is a very weak relationship between the two variables. Calculating the correlation between the two columns, we find a weak positive correlation. 
 
-// display biv_fig2 graph // 
+<iframe src="assets/biv_fig2.html" width=800 height=600 frameBorder=0></iframe>
 
 In the box plot observed above, if we compare the median calories between short and long recipes. We find that the medium number of calories in short recipes is less than the medium number of calories in long recipes. We also observe that both the Q1 and Q3 for short is less than the Q1 and Q3 respectively. This may suggest that there is a possible difference between the calories in short recipes compared to the calories in long recipes.
 
@@ -146,7 +146,7 @@ Alternative Hypothesis: The missingness of food rating does depend on minutes
 
 First I create a new column with values that is True if the row in rating is missing else False. To do simulations, I shuffled the minutes column using the np.random.permutation function. Since we are comparing two quantitative distribuations, we calculate the difference in group means. We then append this difference for each individual simulation (simulated 1000 times).
 
-// display compare_dist1 graph // 
+<iframe src="assets/compare_dist1.html" width=800 height=600 frameBorder=0></iframe>
 
 Observed Difference: 51.45
 
@@ -154,7 +154,7 @@ P-value = 0.111
 
 Using a significance level of 0.05, we can conclude that we fail to reject the null hypothesis since our p-value of 0.111 > 0.05. Therefore we say that the missingness in rating is NOT dependent on the minutes column.
 
-// display missing_fig1 graph //
+<iframe src="assets/missing_fig1.html" width=800 height=600 frameBorder=0></iframe>
 
 #### Missingness dependency of rating with n_ingredients
 
@@ -162,7 +162,7 @@ Null Hypothesis: The missingness of food rating does not depend on n_ingredients
 
 Alternative Hypothesis: The missingness of food rating does depend on n_ingredients
 
-// display compare_dist2 graph // 
+<iframe src="assets/compare_dist2.html" width=800 height=600 frameBorder=0></iframe>
 
 Observed Difference: 0.16
 
@@ -170,7 +170,7 @@ P-value = 0.0
 
 Using a significance level of 0.05, we can conclude that we reject the null hypothesis since our p-value of 0.0 < 0.05. Therefore we say that the missingness in rating is in fact dependent on the n_ingredients column.
 
-// display missing_fig2 graph //
+<iframe src="assets/missing_fig2.html" width=800 height=600 frameBorder=0></iframe>
 
 ---
 
@@ -184,17 +184,28 @@ Null Hypothesis (H0): Short and long recipes have the same amount of calories.
 
 Alternative Hypothesis (H1): Short recipes have less calories than long recipes.
 
-Since previously, I have decided to filter out the cleaned dataframe by removing outliers using the interquartile range. In order to test this hypothesis, I will be using the without_outliers dataframe.
+Since previously, I have decided to filter out the cleaned dataframe by removing outliers using the interquartile range. In order to test this hypothesis, I will be using the without_outliers dataframe. The head of the without_outliers dataframe without only the columns 'time_category' and 'calories' is displayed below.
 
-// show hypothesis_testing df head //
+| time_category | calories |
+|--------------:|---------:|
+|         short |    138.4 |
+|         short |    595.1 |
+|         short |    194.8 |
+|          long |    878.3 |
+|          long |    267.0 |
 
-// show observed_means df //
+Here are the observed means for each category.
+
+| time_category |   calories |
+|--------------:|-----------:|
+|          long | 390.776169 |
+|         short | 312.339553 |
 
 For our test statistic, we will be obtaining the difference in group means. Additionally, we will be using a significance level of 0.05.
 
 Observed Difference in Means: 78.44
 
-// display permutation test graph //
+<iframe src="assets/hypothesis_fig.html" width=800 height=600 frameBorder=0></iframe>
 
 P-value = 0.0
 
