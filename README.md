@@ -1,4 +1,4 @@
-# Recipe Time and Calorie investigation
+# Recipe Minutes and Calorie investigation
 
 This is Project 3 for DSC80
 
@@ -46,9 +46,81 @@ For this investigation, I mainly looked at the 'minutes' column as well as the '
 
 ### Data Cleaning
 
-Here I will be cleaning the data and renaming columns so that it is easier to understand. First we start by left merging the two dataframes on 'recipe_id'. After merging, we will need to fill in all missing values with 0 in order to avoid errors during the analysis. I decided to
+Here I will be cleaning the data and renaming columns so that it is easier to understand. Before merging, I calculated the average rating for each recipes in the reviews dataframe and then we start by left merging the two dataframes on 'recipe_id'. After merging, we will need to fill in all missing values with 0 in order to avoid errors during the analysis. Additionally, I also corrected certain columns to their correct types. For example, the 'date' column contained values of dates presented in the string representation of 'mm/dd/yyyy' format. More importantly, I split the nutrition column into 7 seperate float columns correspinding tho their respective nutritional value. I have also changed some column names to make them easier to reference. 
 
+In my introduction, I have discussed categorizing the recipes into two categories 'short' and 'long'. First we need to define what counts as a 'short' recipe. From the tags columns, we see a tag that says "60-minutes-or-less". I will use this as a threshold to seperate recipes between short and long. Recipes that take less than or equal to 60 minutes will be categorized as 'short' and other recipes will be categorized as 'long'.
 
+The 'minutes' column was renamed to 'time' and a 'time_category' column was added to the dataframe.  Since we are only look at recipes, we can remove all duplicate recipes that came from merging the two dataframes. The head of the resulting cleaned dataframe is displayed below (only important columns are shown for display).
+
+| name                                 |     id |   time |   n_steps |   n_ingredients |         calories | time_category |
+|:-------------------------------------|-------:|-------:|----------:|----------------:|-----------------:| -------------:|
+| 1 brownies in the world    best ever | 333281 |     40 |        10 |               9 |            138.4 |         short |
+| 1 in canada chocolate chip cookies   | 453467 |     45 |        12 |              11 |            595.1 |         short |
+| 412 broccoli casserole               | 306168 |     40 |         6 |               9 |            194.8 |         short |
+| millionaire pound cake               | 286009 |    120 |         7 |               7 |            878.3 |          long | 
+| 2000 meatloaf                        | 475785 |     90 |        17 |              13 |            267.0 |          long |
+
+### Exploratory Data Analysis
+
+#### Univariate Analysis
+
+Here we first analyse the distribution for the time taken for each recipe ('minutes').
+
+// display uni_fig1 graph //
+
+In this distribution, we see that there is a peak when the time taken to cook is between 30-40 (exclusive) minutes. I decided to zoom into the range 0-135 minutes due to extreme outliers. It is also interesting to note that the plot is skewed to the right, with more recipes taking less than 60 minutes to make. In order to take into consideration for outliers, I have decided to only consider values within the interquartile range of 'time'. 
+
+Now we want to take a look at the distribution of calories using the original cleaned dataframe that includes all the outliers. 
+
+// display uni_fig2 graph //
+
+This graph is also zoomed in as a result of extreme outliers, but we can observe that the graph of this is also skewed to the right. Again in order to take into consideration for outliers, I have decided to omit outliers that lie outside of the interquartile range of 'calories'.
+
+#### Bivariate Analysis
+
+For the bivariate analysis, I decided to remove all outliers (discussed in the univariate analysis) by only keeping the values that are within the interquartile range of both the 'time' column as well as the 'calorie' column.
+
+First, I will be doing a bivariate analysis between time and calories.
+
+// dispalay biv_fig1 graph //
+
+Correlation = 0.23
+
+When looking at this figure where we plot time against calories, we can see very clearly that there is a very weak relationship between the two variables. Calculating the correlation between the two columns, we find a weak positive correlation. 
+
+// display biv_fig2 graph // 
+
+In the box plot observed above, if we compare the median calories between short and long recipes. We find that the medium number of calories in short recipes is less than the medium number of calories in long recipes. We also observe that both the Q1 and Q3 for short is less than the Q1 and Q3 respectively. This may suggest that there is a possible difference between the calories in short recipes compared to the calories in long recipes.
+
+#### Interesting Aggregates
+
+In the aggregate analysis, we will be using the cleaned dataframe again. For this analysis, we will look at the number of ingredients with number of steps.
+
+I have created a pivot table indexed by n_steps with mean calories as its values and n_ingredients as the columns. The head of the pivot table is displayed below for n_ingredients up to 5.
+
+|     n_steps |       1 |          2 |          3 |          4 |          5 |
+|------------:|--------:|-----------:|-----------:|-----------:|-----------:|
+|           1 |     0.0 | 213.295082 | 245.167742 | 225.876555 | 324.290960 |
+|           2 | 1851.75 | 222.759770 | 238.465493 | 246.966738 | 266.345312 |
+|           3 |  201.20 | 266.496460 | 251.255313 | 270.967343 | 266.345312 |
+|           4 |  284.80 | 394.714851 | 237.226948 | 385.776799 | 328.932575 |
+|           5 |  199.50 | 303.427848 | 358.209797 | 314.203442 | 346.244974 |
+
+Without considering outliers, we can see a slight increase in the average calories whenever the number of ingredients increase and the number of steps increase. Meaning it is possible that the number of calories increase with the number of ingredients used as well as the number of steps in the recipe. Taking a closer look, we want to create a pivot table where the index is 'time_category'.
+
+|     time_category |       1 |          2 |          3 |          4 |          5 |
+|------------------:|--------:|-----------:|-----------:|-----------:|-----------:|
+|              long |   409.4 | 491.073451 | 458.328671 | 490.813129 | 458.726497 |
+|             short |   797.9 | 303.628233 | 284.937500 | 314.079694 | 328.272583 |	
+
+In this second pivot table generated, it is interesting to note that while the average number of calories for long recipes increase gradually as the number of ingredients increase, the number of calories for short recipes fluctuate as the number of ingredients increase. This may be due to extreme outliers affecting our data. Therefore, we will look at this pivot table again with our dataframe that was filtered by interquartile ranges.
+
+|     time_category |            1 |          2 |          3 |          4 |          5 |
+|------------------:|-------------:|-----------:|-----------:|-----------:|-----------:|
+|              long |   175.100000 | 310.760976 | 250.679464 | 294.205323 | 327.841152 |
+|             short |   230.055556 | 196.928333 | 212.929919 | 232.518780 | 248.952842 |	
+
+Although not significantly better, we are able to observe a slight increasing trend for both long and short recipes. 
 
 ---
 
@@ -66,6 +138,8 @@ In this section, we will examine the missingness of the column 'rating' in the m
 
 I have chosen two columns to test the dependency of 'rating' on, these columns will be minutes and n_ingredients.
 
+#### Missingness dependency of rating with minutes
+
 Null Hypothesis: The missingness of food rating does not depend on minutes 
 
 Alternative Hypothesis: The missingness of food rating does depend on minutes
@@ -81,6 +155,8 @@ P-value = 0.111
 Using a significance level of 0.05, we can conclude that we fail to reject the null hypothesis since our p-value of 0.111 > 0.05. Therefore we say that the missingness in rating is NOT dependent on the minutes column.
 
 // display missing_fig1 graph //
+
+#### Missingness dependency of rating with n_ingredients
 
 Null Hypothesis: The missingness of food rating does not depend on n_ingredients
 
@@ -99,6 +175,8 @@ Using a significance level of 0.05, we can conclude that we reject the null hypo
 ---
 
 ## Hypothesis Testing
+
+### Permutation Testing
 
 The research question for this investigation is, do shorter recipes contain less calories than longer recipes? In this test, we decide short and long recipes by the 60-minutes or less tag, meaning recipes that take 60 minutes or less will be categorized as 'short' otherwise they will be labelled 'long'. In order to test this, we will be running a permutation test. 
 
@@ -121,6 +199,8 @@ Observed Difference in Means: 78.44
 P-value = 0.0
 
 A permutation test is run 1000 times. Using a significance level of 0.05, we can conclude that we reject the null hypothesis since our p-value of 0.0 < 0.05 and accept our alternative hypothesis that short recipes have less calories than long recipes.
+
+### Conclusion
 
 This result may seem reasonable since shorter recipes usually require less ingredients which means the recipes may contain less calories while longer recipes usually require more ingredients as there are usually more steps meaning that the recipe may generally contain more calories than shorter recipes. However, since I have filtered out the dataframe by removing outliers, we can not completely say that short recipes contain less calories than long recipes. Furthermore, there were around 10,000 outliers removed as a result of using only values that sit within the interquartile range of both 'time' and 'calories' therefore we are picking data that makes it easier to perform hypothesis testing which may result in the result being biased. That being said, from this permutation test, we can observe that short recipes contain less calories than long recipes.
 
