@@ -1,7 +1,5 @@
 # Recipe Minutes and Calorie investigation
 
-This is Project 3 for DSC80
-
 By Ammie Xie
 
 ---
